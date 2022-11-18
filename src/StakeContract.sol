@@ -72,12 +72,10 @@ contract StakeContract is Ownable {
     }
 
     function claim(address token) external {
+        require(!balances[msg.sender][token].hasClaimed, "Already claimed.");
         if (token == address(0x0) || !allowedTokens[token])
             revert InvalidToken();
-        if (
-            !balances[msg.sender][token].hasStaked &&
-            !balances[msg.sender][token].hasClaimed
-        ) revert NoStakedToken();
+        if (!balances[msg.sender][token].hasStaked) revert NoStakedToken();
         if (isLockedPeriod(msg.sender, token))
             revert LockedPeriod("The locked period hasn't expired yet.");
 
